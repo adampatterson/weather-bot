@@ -3,11 +3,12 @@
 namespace App\Weather;
 
 use Cache;
+use App\WeatherImportService;
 
 class WeatherService
 {
 
-    public function get()
+    public function getFromFeed()
     {
         $cacheKey = 'weather.iata';
 
@@ -24,6 +25,15 @@ class WeatherService
 
     public function import()
     {
-        return $this->get();
+        $weather = new Weather;
+
+        // Soft Delete everything
+
+
+        // Import new content from the JSON feed.
+        $this->getFromFeed();
+
+
+        return;
     }
 }
