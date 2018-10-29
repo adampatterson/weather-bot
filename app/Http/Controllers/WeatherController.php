@@ -12,6 +12,13 @@ class WeatherController extends Controller
 
     public function get(\App\WeatherBot\WeatherService $weatherService, $key = null)
     {
-        return $weatherService->getFromDatabase($key);
+        $forecast = $weatherService->getForecast($key);
+
+        return $forecast;
+    }
+
+    public function message(\App\WeatherBot\WeatherService $weatherService, $var = null)
+    {
+        return $weatherService->makeMessage($var);
     }
 }

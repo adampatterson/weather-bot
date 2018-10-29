@@ -11,10 +11,8 @@ class WeatherImportService
 
     public function import()
     {
-        // Soft Delete everything
-
         // Import new content from the JSON feed.
-        $feed = (new WeatherService)->getFromFeed();
+        $feed = (new WeatherService)->getAirportFromFeed();
 
         foreach ($feed as $key => $value) {
             $record = [

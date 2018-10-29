@@ -15,17 +15,13 @@ $botman->hears('Weather', function ($bot) {
 });
 
 $botman->hears('/weather {var}', function ($bot, $var) {
-    $cacheKey = 'weather.iata';
+    $weatherService = new \App\WeatherBot\WeatherService;
 
-    if (Cache::has($cacheKey)):
-        $response = Cache::get($cacheKey);
-    else:
-        $response = file_get_contents('https://raw.githubusercontent.com/ram-nadella/airport-codes/master/airports.json');
-        $response = json_decode($response);
-        Cache::forever($cacheKey, $response);
-    endif;
+    $code = substr($var, -3);
 
-    $bot->reply("23c and ☀️ in " . $var);
+    $message = $weatherService->makeMessage($code);
+
+    $bot->reply($message);
 });
 
 $botman->hears('/lookup {var}', function ($bot, $var) {
@@ -41,7 +37,6 @@ $botman->hears('/lookup {var}', function ($bot, $var) {
 
     $bot->reply('This ' . $bodyStyle . ' is ' . Numeral::number($price)->format('$0,0.00'));
 });
-
 
 $botman->hears('Lets Chat', BotManController::class . '@startConversation');
 
