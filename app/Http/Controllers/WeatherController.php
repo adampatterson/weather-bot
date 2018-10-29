@@ -5,8 +5,13 @@ namespace App\Http\Controllers;
 class WeatherController extends Controller
 {
 
-    public function import(\App\Weather\WeatherService $weather)
+    public function import(\App\WeatherBot\WeatherImportService $weatherImportService)
     {
-        dd($weather->get());;
+        return $weatherImportService->import();
+    }
+
+    public function get(\App\WeatherBot\WeatherService $weatherService, $key = null)
+    {
+        return $weatherService->getFromDatabase($key);
     }
 }

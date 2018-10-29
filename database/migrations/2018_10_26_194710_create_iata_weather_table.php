@@ -6,6 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateIataWeatherTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -15,21 +16,20 @@ class CreateIataWeatherTable extends Migration
     {
         Schema::create('iata_weather', function (Blueprint $table) {
             $table->increments('id');
-
-            $table->string( 'key' )->index();
-            $table->string("name");
-            $table->string("city");
-            $table->string("country");
-            $table->string("iata");
-            $table->string("icao");
-            $table->string("latitude");
-            $table->string("longitude");
-            $table->string("altitude");
-            $table->string("timezone");
-            $table->string("dst");
-w
             $table->softDeletes();
             $table->timestamps();
+
+            $table->string('key')->index();
+            $table->string('name');
+            $table->string('city');
+            $table->string('country');
+            $table->string('iata');
+            $table->string('icao');
+            $table->string('latitude');
+            $table->string('longitude');
+            $table->string('altitude');
+            $table->string('timezone');
+            $table->string('dst');
         });
     }
 

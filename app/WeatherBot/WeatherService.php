@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Weather;
+namespace App\WeatherBot;
 
 use Cache;
+use App\Models\Weather as Weather;
 use App\WeatherImportService;
 
 class WeatherService
 {
 
+    // // https://raw.githubusercontent.com/ram-nadella/airport-codes/master/airports.json
     public function getFromFeed()
     {
-        $cacheKey = 'weather.iata';
+        $cacheKey = 'weather.iata.json';
 
         if (Cache::has($cacheKey)):
             $response = Cache::get($cacheKey);
@@ -23,17 +25,25 @@ class WeatherService
         return $response;
     }
 
-    public function import()
+    public function getFromDatabase($key)
     {
-        $weather = new Weather;
+        if (is_null($key)) {
+            $cacheKey = 'weather.iata.db.all';
+        } else {
+            $cacheKey = 'weather.iata.db.' . $key;
+        }
 
-        // Soft Delete everything
+        if (Cache::has($cacheKey)):
+            $response = Cache::get($cacheKey);
+        else:
+            if (is_null($key)) {
+                $response = Weather::all()->toArray();
+            } else {
+                $response = Weather::where('key', $key)->get()->toArray();
+            }
+            Cache::forever($cacheKey, $response);
+        endif;
 
-
-        // Import new content from the JSON feed.
-        $this->getFromFeed();
-
-
-        return;
+        return $response;
     }
 }
