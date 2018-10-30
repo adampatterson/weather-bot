@@ -25,8 +25,22 @@ class WeatherService
         return $response;
     }
 
+    public function cleanKey($key)
+    {
+        $pieces = explode(' ', $key);
+        $key    = array_pop($pieces);
+
+        if (substr($key, -1) == '!' or substr($key, -1) == '?') {
+            $key = substr($key, 0, -1);
+        }
+
+        return $key;
+    }
+
     public function getFromDatabase($key)
     {
+        $key = $this->cleanKey($key);
+
         if (is_null($key)) {
             $cacheKey = 'weather.iata.db.all';
         } else {
@@ -39,9 +53,18 @@ class WeatherService
             if (is_null($key)) {
                 $response = Weather::all()->toArray();
             } else {
-                $response = Weather::where('key', $key)->get()->toArray();
+                if (strlen($key) === 3) {
+                    $response = Weather::where('key', $key)->first();
+                } else {
+                    $response = Weather::where('city', $key)->first();
+
+                    if (is_null($response)) {
+                        return false;
+                    }
+                }
             }
-            Cache::forever($cacheKey, $response);
+
+            Cache::forever($cacheKey, $response->toArray());
         endif;
 
         return $response;
@@ -54,8 +77,7 @@ class WeatherService
 
         $location = $this->getFromDatabase($key);
 
-        if (count($location) == 1) {
-            $location  = $location[0];
+        if (is_array($location)) {
             $latitude  = $location['latitude'];
             $longitude = $location['longitude'];
 
@@ -67,7 +89,7 @@ class WeatherService
                 $weather = file_get_contents($weatherApi);
                 $weather = json_decode($weather, true);
 
-                Cache::put($cacheKey, $weather, now()->addMinutes(30));
+                Cache::put($cacheKey, $weather, now()->addMinutes(15));
             endif;
 
             return ['weather' => $weather, 'city' => $location];
@@ -80,7 +102,16 @@ class WeatherService
     {
         $weather = new \App\WeatherBot\WeatherService;
 
+//        $code = substr($var, -3);
+
+        $pieces = explode(' ', $var);
+        $code   = array_pop($pieces);
+
         $forecast = $weather->getForecast($var);
+
+        if ( ! $forecast) {
+            return 'Sorry, There was an issue.';
+        }
 
         $emoji = [
             'clear-day'           => '☀️',

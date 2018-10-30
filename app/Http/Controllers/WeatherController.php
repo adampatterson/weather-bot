@@ -14,7 +14,7 @@ class WeatherController extends Controller
     {
         $forecast = $weatherService->getForecast($key);
 
-        return $forecast;
+        return (is_array($forecast)) ? $forecast : [false];
     }
 
     public function message(\App\WeatherBot\WeatherService $weatherService, $var = null)
