@@ -18,7 +18,7 @@ The string or phrase like `Whats the weather in yeg`, or `/weather in Edmonton` 
 
 To get up and running quickly I recommend using [Ngrok](https://ngrok.com/) which will allow you to proxy your local connection externally.
 
-For the weather you will need to creat an API key over at [Dark Sky](https://darksky.net/dev).
+For the weather you will need to create an API key over at [Dark Sky](https://darksky.net/dev).
  
 Create a new Database, add your credentials to the `.env` file along with your Darksky API Key.  
 
