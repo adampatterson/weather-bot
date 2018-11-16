@@ -25,13 +25,29 @@ class WeatherService
         return $response;
     }
 
-    public function cleanKey($key)
+    /**
+     * While it is possible to look up the weather based on airport codes like YEG
+     * or a City name like Edmonton. There are some cities like New York or San Fransisco
+     * that cause problems.
+     *
+     * @param $string
+     *
+     * @return mixed
+     */
+    public function cleanKey($string)
     {
-        $pieces = explode(' ', $key);
-        $key    = array_pop($pieces);
+        $cleanKey = str_replace(['?', '!', '.'], "", $string);
 
-        if (substr($key, -1) == '!' or substr($key, -1) == '?') {
-            $key = substr($key, 0, -1);
+        $pieces = explode(' ', $cleanKey);
+
+        if (count($pieces) > 2) {
+            $dirtyCity = array_slice($pieces, -2);
+
+            $key['first']  = $dirtyCity[1];
+            $key['second'] = $dirtyCity[0];
+        } else {
+            $key['first']  = array_pop($pieces);
+            $key['second'] = null;
         }
 
         return $key;
@@ -39,43 +55,46 @@ class WeatherService
 
     public function getFromDatabase($key)
     {
-        $key = $this->cleanKey($key);
-
         if (is_null($key)) {
             $cacheKey = 'weather.iata.db.all';
+
+            return Weather::all()->toArray();
         } else {
-            $cacheKey = 'weather.iata.db.' . $key;
+            $cacheKey = 'weather.iata.db.' . str_slug($key, '-');
         }
 
         if (Cache::has($cacheKey)):
             $response = Cache::get($cacheKey);
         else:
-            if (is_null($key)) {
-                $response = Weather::all()->toArray();
-            } else {
-                if (strlen($key) === 3) {
-                    $response = Weather::where('key', $key)->first();
-                } else {
-                    $response = Weather::where('city', $key)->first();
 
-                    if (is_null($response)) {
-                        return false;
-                    }
+            if (strlen($key) === 3) {
+                $response = Weather::where('key', $key)->first();
+            } else {
+                $response = Weather::where('city', $key)->first();
+
+                if (is_null($response)) {
+                    return false;
                 }
             }
 
-            Cache::forever($cacheKey, $response->toArray());
+            Cache::forever($cacheKey, $response);
         endif;
 
-        return $response;
+        return $response->toArray();
     }
 
     public function getForecast($key = null)
     {
-        $cacheKey = 'weather.forecast.' . $key;
+        $cacheKey = 'weather.forecast.' . str_slug($key, '_');
         $api_key  = config('services.forecast')['key'];
 
-        $location = $this->getFromDatabase($key);
+        $key = $this->cleanKey($key);
+
+        $location = $this->getFromDatabase($key['first']);
+
+        if ($location === false) {
+            $location = $this->getFromDatabase($key['second'] . ' ' . $key['first']);
+        }
 
         if (is_array($location)) {
             $latitude  = $location['latitude'];
@@ -100,14 +119,12 @@ class WeatherService
 
     public function makeMessage($var)
     {
-        $weather = new \App\WeatherBot\WeatherService;
-
 //        $code = substr($var, -3);
 
-        $pieces = explode(' ', $var);
-        $code   = array_pop($pieces);
+//        $pieces = explode(' ', $var);
+//        $code   = array_pop($pieces);
 
-        $forecast = $weather->getForecast($var);
+        $forecast = $this->getForecast($var);
 
         if ( ! $forecast) {
             return 'Sorry, There was an issue.';
@@ -131,6 +148,7 @@ class WeatherService
         $now     = $forecast['weather']['currently']['summary'];
         $nowTemp = $forecast['weather']['currently']['temperature'];
         $later   = $forecast['weather']['daily']['summary'];
+
 
 //        return "Right now it's " . $nowTemp . "c and " . $now . " " . $icon . " in " . $in . '. Later this week: ' . $later;
         return "Right now it's " . $nowTemp . "c and " . $now . " " . $icon . " in " . $in . ".";
