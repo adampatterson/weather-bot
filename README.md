@@ -1,25 +1,54 @@
-<p align="center"><img height="188" width="198" src="https://botman.io/img/botman.png"></p>
-<h1 align="center">BotMan Studio</h1>
+#WeatherBot
 
-## About BotMan Studio
+**How the Bot works**
 
-While BotMan itself is framework agnostic, BotMan is also available as a bundle with the great [Laravel](https://laravel.com) PHP framework. This bundled version is called BotMan Studio and makes your chatbot development experience even better. By providing testing tools, an out of the box web driver implementation and additional tools like an enhanced CLI with driver installation, class generation and configuration support, it speeds up the development significantly.
+This is a quick and dirty Slack Bot experiment using [BotMan](https://botman.io/) and the [DarkSky API](https://darksky.net).
 
-## Documentation
+Sending a string using an International Air Transport Association or IATA code will return that locations weather conditions using the [DarkSky API](https://darksky.net).
 
-You can find the BotMan and BotMan Studio documentation at [http://botman.io](http://botman.io).
+The string or phrase like `Whats the weather in yeg`, or `/weather in Edmonton` will return a formatted string.
 
-## Support the development
-**Do you like this project? Support it by donating**
+"Right now it's -12.54c and Light Snow ❄️ in Edmonton."
 
-- PayPal: [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=m%2epociot%40googlemail%2ecom&lc=CY&item_name=BotMan&no_note=0&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest)
-- Patreon: [Donate](https://www.patreon.com/botman)
+**Requirements**
+* Running Laravel 5.7
+* Memcached
 
-## Security Vulnerabilities
+####Setting up the Bot
 
-If you discover a security vulnerability within BotMan or BotMan Studio, please send an e-mail to Marcel Pociot at m.pociot@gmail.com. All security vulnerabilities will be promptly addressed.
+To get up and running quickly I recommend using [Ngrok](https://ngrok.com/) which will allow you to proxy your local connection externally.
 
-## License
+For the weather you will need to creat an API key over at [Dark Sky](https://darksky.net/dev).
+ 
+Create a new Database, add your credentials to the `.env` file along with your Darksky API Key.  
 
-BotMan is free software distributed under the terms of the MIT license.
+```
+  SLACK_BOT_TOKEN=token
+  FORECAST_API=key
+```
 
+Next run `composer install`, `artisan migrate` to setup the Database.
+
+Our data will come from a json file containing all of the airport codes which will give us the city names as well as the lat log locations that will be used for the weather API call.
+
+Next run `artisan weather:import`.
+
+####Setting up Slack
+ 
+To use the bot with Slack you will have to register a new [Bot](https://api.slack.com/apps/new).
+ 
+Name your App and choose your Development workspace.
+  
+**Slash Command**
+Under Features add a Slash Command add `/weather` and for the quest URL use you Ngrok url (https://random.ngrok.io/botman)
+
+**Event Subscriptions**
+In order for Slack to send our bot any information we need to subscribe to some specific actions.
+
+Add `message.channels, message.im`, again we need to add the bot URL (https://random.ngrok.io/botman)
+
+**Bot Users**
+Under `Bot Users` click **Add Bot User**.
+
+**Authentication**
+Under `OAuth & Permissions` click `Install App to Workspace` authorize the bot with your workspace and add the **Bot User OAuth Access Token** to your `.env` file.
