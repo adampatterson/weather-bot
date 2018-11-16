@@ -22,3 +22,4 @@ Route::get('/botman/tinker', 'BotManController@tinker');
 Route::get('/weather/import', 'WeatherController@import');
 Route::get('/weather/get/{key?}', 'WeatherController@get');
 Route::get('/weather/message/{key?}', 'WeatherController@message');
+Route::get('/weather/test/', 'WeatherController@test');

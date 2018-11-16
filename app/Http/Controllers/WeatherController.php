@@ -21,4 +21,9 @@ class WeatherController extends Controller
     {
         return $weatherService->makeMessage($var);
     }
+
+    public function test(\App\WeatherBot\WeatherService $weatherService)
+    {
+        return $weatherService->makeMessage(\Request::get('message'));
+    }
 }
