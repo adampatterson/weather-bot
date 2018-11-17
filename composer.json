@@ -16,7 +16,7 @@
         "botman/botman": "~2.0",
         "botman/driver-slack": "^2.1",
         "botman/driver-web": "~1.0",
-        "botman/studio-addons": "~1.2.1",
+        "botman/studio-addons": "~1.4.1",
         "botman/tinker": "~1.0",
         "fideloper/proxy": "~4.0",
         "laravel/framework": "5.7.*",
