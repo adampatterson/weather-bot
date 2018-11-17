@@ -1,4 +1,4 @@
-#WeatherBot
+# WeatherBot
 
 **How the Bot works**
 
@@ -14,7 +14,7 @@ The string or phrase like `Whats the weather in yeg`, or `/weather in Edmonton` 
 * Running Laravel 5.7
 * Memcached
 
-####Setting up the Bot
+#### Setting up the Bot
 
 To get up and running quickly I recommend using [Ngrok](https://ngrok.com/) which will allow you to proxy your local connection externally.
 
@@ -33,7 +33,7 @@ Our data will come from a json file containing all of the airport codes which wi
 
 Next run `artisan weather:import`.
 
-####Setting up Slack
+#### Setting up Slack
  
 To use the bot with Slack you will have to register a new [Bot](https://api.slack.com/apps/new).
  
