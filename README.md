@@ -1,6 +1,6 @@
 # WeatherBot
 
-### How the Bot works**
+### How the Bot work
 
 This is a quick and dirty Slack Bot experiment using [BotMan](https://botman.io/) and the [DarkSky API](https://darksky.net).
 
@@ -10,7 +10,7 @@ The string or phrase like `Whats the weather in yeg`, or `/weather in Edmonton` 
 
 "Right now it's -12.54c and Light Snow ❄️ in Edmonton."
 
-### Requirements**
+### Requirements
 * Running Laravel 5.7
 * Memcached
 
